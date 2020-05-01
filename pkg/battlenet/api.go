@@ -47,20 +47,30 @@ func NewAPI(region string) API {
 	return api
 }
 
-// FindConnectedRealms returns connected realm id for given realm
-func (a *api) FindConnectedRealm(realm string) (ConnectedRealm, error) {
-	connectedRealmsEndpoint := fmt.Sprintf("https://%s.%s/data/wow/realm/%s?locale=en_GB", a.region, apiURL, realm)
-	var connectedRealm ConnectedRealm
-	req, err := http.NewRequest("GET", connectedRealmsEndpoint, nil)
+func (a *api) makeRequest(url string) (*http.Response, error) {
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return connectedRealm, err
+		return nil, err
 	}
 
 	req.Header.Add("Battlenet-Namespace", fmt.Sprintf("dynamic-%s", a.region))
 
 	response, err := a.http.Do(req)
 	if err != nil {
-		return ConnectedRealm{}, err
+		return nil, err
+	}
+
+	return response, nil
+}
+
+// FindConnectedRealms returns connected realm id for given realm
+func (a *api) FindConnectedRealm(realm string) (ConnectedRealm, error) {
+	var connectedRealm ConnectedRealm
+	response, err := a.makeRequest(
+		fmt.Sprintf("https://%s.%s/data/wow/realm/%s?locale=en_GB", a.region, apiURL, realm),
+	)
+	if err != nil {
+		return connectedRealm, err
 	}
 
 	defer response.Body.Close()
@@ -86,13 +96,8 @@ func (a *api) FindConnectedRealm(realm string) (ConnectedRealm, error) {
 // ListAuctions lists all current auctions of the connected realms
 func (a *api) ListAuctions(connectedRealmID int) ([]Auction, error) {
 	listAuctionsEndpoint := fmt.Sprintf("https://%s.%s/data/wow/connected-realm/%d/auctions?locale=en_GB", a.region, apiURL, connectedRealmID)
-	req, err := http.NewRequest("GET", listAuctionsEndpoint, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Add("Battlenet-Namespace", fmt.Sprintf("dynamic-%s", a.region))
+	response, err := a.makeRequest(listAuctionsEndpoint)
 
-	response, err := a.http.Do(req)
 	if err != nil {
 		return nil, err
 	}

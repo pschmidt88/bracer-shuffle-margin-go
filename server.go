@@ -28,9 +28,12 @@ func main() {
 			log.Fatal(err)
 		}
 
-		battleNet.ListAuctions(connectedRealm.ID)
+		auctions, err := battleNet.ListAuctions(connectedRealm.ID)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-		return context.String(http.StatusOK, ":+1:")
+		return context.JSON(http.StatusOK, auctions)
 	})
 
 	api.Logger.Info(api.Start(":8080"))

@@ -85,5 +85,34 @@ func (a *api) FindConnectedRealm(realm string) (ConnectedRealm, error) {
 
 // ListAuctions lists all current auctions of the connected realms
 func (a *api) ListAuctions(connectedRealmID int) ([]Auction, error) {
-	return make([]Auction, 0), nil
+	listAuctionsEndpoint := fmt.Sprintf("https://%s.%s/data/wow/connected-realm/%d/auctions?locale=en_GB", a.region, apiURL, connectedRealmID)
+	req, err := http.NewRequest("GET", listAuctionsEndpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Battlenet-Namespace", fmt.Sprintf("dynamic-%s", a.region))
+
+	response, err := a.http.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("not a 200. error: %s", response.Body)
+	}
+
+	bytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	auctionListResponse := AuctionListResponse{}
+	err = json.Unmarshal(bytes, &auctionListResponse)
+	if err != nil {
+		return nil, err
+	}
+
+	return auctionListResponse.Auctions, nil
 }

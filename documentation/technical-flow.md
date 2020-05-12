@@ -12,13 +12,13 @@ using Realm API
 
 - Get all auctions
 
-using Action House API
+using TSM API
 
-`GET /data/wow/connected-realm/{connectedRealmId}/auctions`
+`GET https://api.tradeskillmaster.com/v1/item/{region}/{servername}/{itemId}`
 
-## Filter auctions
+## Get average buy and min buyout prices
 
-We need prices for a bunch of items
+We need those prices for a bunch of items
 
 ### Vendor Materials
 
@@ -33,7 +33,6 @@ We need prices for a bunch of items
 - 152541 [Coarsed Leather](https://www.wowhead.com/item=152541/coarse-leather)
 - 153050 [Shimmerscale](https://www.wowhead.com/item=153050/shimmerscale)
 - 154164 [Blood-stained Bone](https://www.wowhead.com/item=154164/blood-stained-bone)
-i
 - 153051 [Mistscale](https://www.wowhead.com/item=153051/mistscale)
 - 152577 [Deep Sea Satin](https://www.wowhead.com/item=152577/deep-sea-satin)
 
@@ -58,7 +57,7 @@ i
 - 168592 [Oceanic Restoration](https://www.wowhead.com/item=168592/enchant-weapon-oceanic-restoration)
 
 
-## Calculate Cheapest Bracers
+## Determine Cheapest Bracers
 
 ### Tidespray Bracer (Tailor)
 
